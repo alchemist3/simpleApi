@@ -9,7 +9,7 @@ users = [
     {
         'user_id': 1,
         'login': 'testUser',
-        'hashed_password': 'test'
+        'hashed_password': '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'
     },
     {
         'user_id': 2,
@@ -67,7 +67,7 @@ def sign_in():
     if dict_index is not None:
         if users[dict_index]['hashed_password'] == password:
             token = generate_token(users[dict_index]['user_id'])
-            return token
+            return jsonify({'token': token.decode("utf-8")})
         else:
             abort(401)
     else:

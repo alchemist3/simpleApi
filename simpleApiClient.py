@@ -2,6 +2,7 @@
 import httplib2
 import pprint
 import json
+import hashlib
 
 server_url = 'http://127.0.0.1:5000'
 
@@ -9,10 +10,11 @@ server_url = 'http://127.0.0.1:5000'
 def sign_in(login, password):
     url = server_url + '/signIn'
     http = httplib2.Http('.cache')
-    data = {'login': login, 'password': password}
+    hash_object = hashlib.sha256(str.encode(password))
+    data = {'login': login, 'password': hash_object.hexdigest()}
     content = http.request(url, method='POST', body=json.dumps(data),
                            headers={'Content-type': 'application/json; charset=UTF-8'})[1]
-    return content.decode('utf-8')
+    return json.loads(content.decode('utf-8'))
 
 
 def get_stock_data(token):
@@ -34,12 +36,13 @@ def place_order(order, token):
     http = httplib2.Http()
     content = http.request(url, method='POST', body=json.dumps(order),
                            headers={'Content-type': 'application/json; charset=UTF-8', 'token': token})[1]
-    return content
+    return json.loads(content.decode('utf-8'))
 
 
 token = sign_in('testUser', 'test')
+print(token)
 
-pprint.pprint(get_stock_data(token))
+pprint.pprint(get_stock_data(token['token']))
 # pprint.pprint(get_orders_data())
 
 sample_order = {
@@ -47,5 +50,5 @@ sample_order = {
     'amount': 10
 }
 
-place_order(sample_order, token)
+print(place_order(sample_order, token['token']))
 # pprint.pprint(get_orders_data())
