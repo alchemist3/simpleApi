@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import httplib2
-import pprint
 import json
 import hashlib
 
@@ -36,18 +35,3 @@ def place_order(order, token):
     content = http.request(url, method='POST', body=json.dumps(order),
                            headers={'Content-type': 'application/json; charset=UTF-8', 'token': token})[1]
     return json.loads(content.decode('utf-8'))
-
-
-token = sign_in('testUser', 'test')
-print(token)
-
-pprint.pprint(get_stock_data(token['token']))
-# pprint.pprint(get_orders_data())
-
-sample_order = {
-    'stock_id': 1,
-    'amount': 10
-}
-
-print(place_order(sample_order, token['token']))
-# pprint.pprint(get_orders_data())

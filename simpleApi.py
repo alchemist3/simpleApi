@@ -85,8 +85,11 @@ def place_order():
         else:
             order_id = 1
 
-        stock_id = request.json['stock_id']
-        amount = request.json['amount']
+        try:
+            stock_id = request.json['stock_id']
+            amount = request.json['amount']
+        except KeyError:
+            abort(400)
 
         dict_index = next((index for (index, d) in enumerate(stock) if d['stock_id'] == stock_id), None)
 
