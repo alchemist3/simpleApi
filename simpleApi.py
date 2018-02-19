@@ -42,13 +42,10 @@ app = Flask(__name__)
 users, orders, stock = read_data()
 
 
-@app.route('/signIn', methods=['POST'])
+@app.route('/signIn', methods=['GET'])
 def sign_in():
-    if not request.json:
-        abort(400)
-
-    login = request.json['login']
-    password = request.json['password']
+    login = request.headers['login']
+    password = request.headers['password']
 
     dict_index = next((index for (index, d) in enumerate(users) if d['login'] == login), None)
     if dict_index is not None:

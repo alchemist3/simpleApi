@@ -11,9 +11,8 @@ def sign_in(login, password):
     url = server_url + '/signIn'
     http = httplib2.Http('.cache')
     hash_object = hashlib.sha256(str.encode(password))
-    data = {'login': login, 'password': hash_object.hexdigest()}
-    content = http.request(url, method='POST', body=json.dumps(data),
-                           headers={'Content-type': 'application/json; charset=UTF-8'})[1]
+    content = http.request(url, method='GET',
+                           headers={'login': login, 'password': hash_object.hexdigest()})[1]
     return json.loads(content.decode('utf-8'))
 
 
@@ -46,7 +45,7 @@ pprint.pprint(get_stock_data(token['token']))
 # pprint.pprint(get_orders_data())
 
 sample_order = {
-    'stock_id': 2,
+    'stock_id': 1,
     'amount': 10
 }
 
