@@ -1,42 +1,25 @@
 #!/usr/bin/python3
 from flask import Flask, jsonify, request, abort, make_response
 from itsdangerous import (TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
+import json
 import config
 
-app = Flask(__name__)
 
-users = [
-    {
-        'user_id': 1,
-        'login': 'testUser',
-        'hashed_password': '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'
-    },
-    {
-        'user_id': 2,
-        'login': 'someUser1',
-        'hashed_password': 'test'
-    }
-]
+def read_data():
+    with open(config.users_path, 'r') as f:
+        users = json.load(f)
+    with open(config.orders_path, 'r') as f:
+        orders = json.load(f)
+    with open(config.stock_path, 'r') as f:
+        stock = json.load(f)
+    return users, orders, stock
 
-stock = [
-    {
-        'stock_id': 1,
-        'product': 'hammer',
-        'amount': 1000
-    },
-    {
-        'stock_id': 2,
-        'product': 'chainsaw',
-        'amount': 50
-    },
-    {
-        'stock_id': 3,
-        'product': 'screwdriver',
-        'amount': 100
-    }
-]
 
-orders = []
+def save_data(orders, stock):
+    with open(config.orders_path, 'w') as f:
+        json.dump(orders, f)
+    with open(config.stock_path, 'w') as f:
+        json.dump(stock, f)
 
 
 def generate_token(user_id, expiration=config.token_expiration):
@@ -53,6 +36,10 @@ def verify_token(token):
     except BadSignature:
         return False  # invalid token
     return data['user_id']
+
+
+app = Flask(__name__)
+users, orders, stock = read_data()
 
 
 @app.route('/signIn', methods=['POST'])
@@ -117,6 +104,7 @@ def place_order():
             }
 
             orders.append(order)
+            save_data(orders, stock)
             return jsonify({'order': order}), 201
         else:
             abort(400)
